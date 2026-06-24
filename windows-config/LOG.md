@@ -47,7 +47,11 @@ should treat "make the Windows setup better" as the standing objective and build
   Terminal (not "Windows PowerShell"). Set as default in Terminal settings.
 - **PSReadLine** configured in PS7 `$PROFILE` (`OneDrive\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`):
   history+plugin predictions, ListView style, cyan commands, green parameters.
-- **Starship** prompt active in PS7 profile.
+- **Starship** prompt active in PS7 profile. Init script cached to `%TEMP%\starship_ps_init.ps1`
+  (auto-regenerates when starship binary is updated) — avoids subprocess spawn on every tab open.
+- **zoxide** init cached to `%TEMP%\zoxide_ps_init.ps1` — same pattern.
+- **PSFzf** lazy-loaded: not imported at startup; loads on first Ctrl+T or Ctrl+R press.
+  Cuts ~1.2s from startup time.
 - **ttyper** alias: `ttyper` function in PS7 profile runs with `-w 25 --no-backtrack`.
 
 ### Git Bash
@@ -57,7 +61,9 @@ should treat "make the Windows setup better" as the standing objective and build
   popup delay set to 800ms (`complete_auto_delay=800`; default 300ms).
 - `~/.bashrc` sets `USER="${USER:-$USERNAME}"` before sourcing ble.sh to suppress the $USER warning
   (Git Bash on Windows doesn't set $USER by default).
-- **Starship** prompt active via `~/.bashrc`.
+- **Starship, fzf, zoxide** init scripts cached to `~/.cache/shell-init/` (starship_bash.sh,
+  fzf_bash.sh, zoxide_bash.sh). Each auto-regenerates when the respective binary is updated.
+  Avoids three subprocess spawns on every tab open.
 
 ### cmd
 - **Clink** installed (`winget install chrisant996.Clink`). Auto-hooks into cmd on launch.

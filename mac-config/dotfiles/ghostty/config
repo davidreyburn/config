@@ -1,0 +1,53 @@
+# ── Phosphor Green Theme ─────────────────────────────────────────────────────
+
+# Font
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+
+# Core phosphor colors
+foreground = #39FF39
+background = #141a03
+
+# Transparency + blur (macOS vibrancy)
+background-opacity = 0.95
+background-blur-radius = 24
+
+# Cursor — glowing green block
+cursor-style = block
+cursor-color = #33FF33
+cursor-text = #141a03
+
+# Selection
+selection-foreground = #030d03
+selection-background = #33FF33
+
+# ── 16-color palette (phosphor monochrome green spectrum) ────────────────────
+# Darks use deep greens; brights use vivid greens so ls/git output still reads
+palette = 0=#2a3a08
+palette = 1=#2a9b2a
+palette = 2=#2eb82e
+palette = 3=#3dcc3d
+palette = 4=#2a8060
+palette = 5=#2aaa70
+palette = 6=#00dd77
+palette = 7=#55ff55
+palette = 8=#252d05
+palette = 9=#11dd11
+palette = 10=#39ff39
+palette = 11=#66FF66
+palette = 12=#11ffbb
+palette = 13=#44ffaa
+palette = 14=#77ff77
+palette = 15=#ddffdd
+
+# ── CRT scanline shader ──────────────────────────────────────────────────────
+# custom-shader = ~/.config/ghostty/shaders/scanlines.glsl
+
+# ── Window ───────────────────────────────────────────────────────────────────
+window-padding-x = 12
+window-padding-y = 10
+macos-titlebar-style = tabs
+
+# ── Quick terminal (global hotkey slide-in) ───────────────────────────────────
+quick-terminal-position = right
+keybind = global:super+grave_accent=toggle_quick_terminal

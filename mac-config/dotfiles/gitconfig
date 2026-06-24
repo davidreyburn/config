@@ -1,0 +1,8 @@
+[user]
+	name = David Reyburn
+	email = reyburn.david@gmail.com
+[core]
+	editor = nano
+	excludesfile = /Users/dj/.gitignore_global
+[init]
+	defaultBranch = main

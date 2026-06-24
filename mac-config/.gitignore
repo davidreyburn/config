@@ -1,0 +1,4 @@
+.DS_Store
+*.bak
+dotfiles/ssh/known_hosts
+dotfiles/ssh/id_*

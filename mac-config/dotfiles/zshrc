@@ -1,0 +1,20 @@
+export PATH="$HOME/.local/bin:$PATH"
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt HIST_IGNORE_DUPS   # skip saving if same as previous command
+setopt HIST_IGNORE_SPACE  # skip saving commands that start with a space
+setopt SHARE_HISTORY      # share history across all open terminals
+setopt HIST_REDUCE_BLANKS # strip extra whitespace before saving
+
+# Aliases
+alias z='ssh -t chives@aleph "docker exec -it openclaw-gateway bash -lc '\''cd /home/node/.openclaw/workspace && openclaw chat'\''"'
+
+# Plugins
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# fzf — fuzzy Ctrl+R history search, Ctrl+T file search, Alt+C directory jump
+eval "$(fzf --zsh)"

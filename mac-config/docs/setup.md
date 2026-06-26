@@ -57,7 +57,7 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 - Config: `~/.ssh/config` — auto-adds key to agent, uses macOS Keychain
 - Added to macOS Keychain — persists across reboots
 
-**Pending:** Add public key to GitHub (Settings → SSH and GPG keys → New SSH key)
+**GitHub:** SSH key added via `gh auth login`
 
 #### aleph (`192.168.1.192`, user: `chives`)
 - New key installed and tested — `ssh aleph` works
@@ -71,18 +71,25 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 - `init.defaultBranch` — main
 - `core.excludesfile` — `~/.gitignore_global` (ignores `.DS_Store` system-wide)
 
-### Aliases
-
-| Alias | Action |
-|-------|--------|
-| `z` | SSH into aleph and connect to openclaw agent via Docker |
-
 ### Shell (`~/.zshrc`)
 
 - **zsh-autosuggestions** — grey inline suggestions from history; right arrow to accept (brew)
 - **zsh-syntax-highlighting** — live command coloring green/red (brew)
-- **fzf** — fuzzy `Ctrl+R` history search, `Ctrl+T` file search, `Alt+C` dir jump (brew)
+- **fzf** — fuzzy `Ctrl+R` history search, `Ctrl+T` file search (with bat preview), `Alt+C` dir jump (brew)
 - **History** — 10k entries, persisted to `~/.zsh_history`, shared across tabs, deduped
+
+### Aliases
+
+| Alias | Command | Notes |
+|-------|---------|-------|
+| `z` | SSH → aleph → openclaw Docker | Connects to openclaw agent |
+| `ls` | `eza --icons` | Replaces ls |
+| `ll` | `eza --icons -la --git` | Long list with git status |
+| `lt` | `eza --icons --tree --level=2` | Tree view |
+| `cat` | `bat --style=plain` | Replaces cat with syntax highlighting |
+| `lg` | `lazygit` | TUI git client |
+| `j` | `zoxide` | Smart directory jump (learns habits) |
+| `live` | `~/bin/live` | Start full Tidal livecoding session |
 
 ### Ghostty theme
 - Phosphor green CRT aesthetic tuned for the MacBook Neo Citrus colorway
@@ -101,6 +108,12 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 
 ---
 
+### GitHub CLI (`gh`)
+
+- Installed via Homebrew
+- Authenticated via `gh auth login`
+- SSH key added to GitHub during auth
+
 ### Neovim (`~/.config/nvim/`)
 
 - Installed via Homebrew (`brew install neovim`) — v0.12.3
@@ -116,9 +129,154 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 - `ripgrep` — fast grep, also useful standalone (`rg`)
 - `fd` — fast `find` alternative, also useful standalone
 
+### eza
+
+- Installed via Homebrew
+- Modern `ls` replacement with icons, colors, git status
+- Aliased: `ls`, `ll` (long + git), `lt` (tree)
+
+### bat
+
+- Installed via Homebrew
+- `cat` replacement with syntax highlighting and line numbers
+- Aliased as `cat`; used as fzf file preview
+- Theme: **Verdigris** — retro refined; bone text, muted phosphor green, aged teal/orange/blue/purple
+  - File: `~/.config/bat/themes/Verdigris.tmTheme`
+  - Config: `~/.config/bat/config`
+  - Palette: bone `#D0CAB8` · green `#44BB44` · orange `#C4834A` · teal `#4AACA4` · blue `#5B8DB8` · purple `#8855BB` · lime `#AAFF00` (numbers)
+
+### zoxide
+
+- Installed via Homebrew
+- Smart `cd` that learns frequent directories
+- Invoked as `j` (avoids conflict with `z` SSH alias)
+- Example: `j know` → `~/knowledge`, `j dun` → `~/dungeonworld`
+
+### lazygit
+
+- Installed via Homebrew (`lg` alias)
+- Full TUI for git: stage hunks, browse diffs, view history, resolve conflicts
+
+### Starship
+
+- Installed via Homebrew
+- Config: `~/.config/starship.toml` — phosphor-themed two-line prompt
+- **Line 1:** directory (bright green) · git branch (amber) · git status · Python/Haskell version when relevant · background jobs · time (right-aligned) · battery
+- **Line 2:** `❯` character (amber on error, shows exit code)
+- Battery icon changes shape (█ → ▄ → ▂) and goes amber under 20%
+- Username/hostname only appear when SSH'd (e.g. into aleph)
+
+### btop
+
+- Installed via Homebrew
+- TUI system monitor — CPU, memory, processes, network. Run: `btop`
+
+### glow
+
+- Installed via Homebrew
+- Renders markdown in the terminal. Run: `glow <file.md>` or `glow` to browse
+- Useful for reading `~/knowledge` and `~/dungeonworld` notes without opening Neovim
+
+### yazi
+
+- Installed via Homebrew
+- TUI file manager with preview panes (markdown, images, code via bat)
+- Run: `yazi`
+
+### posting
+
+- Installed via Homebrew
+- TUI HTTP client (terminal Postman). Run: `posting`
+
+### ncdu
+
+- Installed via Homebrew
+- TUI disk usage analyser. Run: `ncdu` to scan current directory
+- Useful for finding space hogs on a constrained machine
+
+### tmux
+
+- Installed via Homebrew
+- Config: `~/.tmux.conf`
+- Prefix: `Ctrl+a`
+- Docs: `cheatsheet.md` (tmux section)
+
+### tmux-resurrect
+
+- Cloned to `~/.tmux/plugins/tmux-resurrect`
+- Saves and restores tmux sessions across reboots
+- `Ctrl+a Ctrl+s` — save, `Ctrl+a Ctrl+r` — restore
+
+### Node + Prettier
+
+- Node installed via Homebrew (required for Prettier)
+- Prettier installed globally via npm
+- Used by conform.nvim to format markdown on `Space+f`
+
+---
+
+## Music / Livecoding
+
+### FluidSynth
+
+- Installed via Homebrew
+- Soundfont: `/usr/local/share/soundfonts/GeneralUser-GS.sf2`
+- Used as MIDI synth backend for ORCA
+- Docs: `../livecode/CLAUDE.md`
+
+### SuperCollider / SuperDirt
+
+- Installed as `/Applications/SuperCollider.app`
+- `sclang` and `scsynth` symlinked to `~/bin/` for terminal use
+- Startup file: `~/Library/Application Support/SuperCollider/startup.scd` — boots SuperDirt automatically
+- `sclang_conf.yaml` includes SCClassLibrary path explicitly (required for CLI)
+- Docs: `../livecode/CLAUDE.md`
+
+### TidalCycles
+
+- Installed via `cabal install --lib tidal` (tidal 1.10.2, GHC 9.14.1)
+- GHC + cabal installed via Homebrew; Hackage mirror fixed to use HTTPS
+- Boot file: `~/.config/tidal/BootTidal.hs`
+- Docs: `../livecode/CLAUDE.md`
+
+### ORCA
+
+- Built from source at `~/code/orca-c`
+- Launcher: `~/bin/orca` — runs with `--initial-size 57x25`
+- Quit: `Ctrl+Q` (not `Ctrl+C` — TUI app)
+- Docs: `../livecode/CLAUDE.md`
+
+### live (session launcher)
+
+- Location: `~/bin/live`
+- Starts (or reattaches to) a tmux session with sclang, GHCi, and nvim pre-arranged
+- Run: `live`
+
+---
+
+## Neovim plugins summary
+
+| Plugin | Purpose |
+|--------|---------|
+| kickstart.nvim | Base config |
+| vim.pack | Built-in plugin manager (Neovim 0.12+) |
+| Telescope | Fuzzy finder (`Space+s*`) |
+| neo-tree | File browser (`\`) |
+| nvim-treesitter | Syntax parsing (markdown, haskell, lua, etc.) |
+| markview.nvim | In-buffer markdown rendering |
+| conform.nvim | Formatting (`Space+f`) — prettier for markdown, black for Python |
+| vim-tidal | Send `.tidal` patterns to GHCi |
+| LSP (pyright, lua-ls) | Code intelligence for Python and Lua |
+| blink.cmp | Autocomplete |
+| which-key | Keymap hints |
+| gitsigns | Git status in gutter |
+
+---
+
 ## To Do / Not Yet Done
 
 - [x] Document how JetBrains Mono was installed
 - [x] Shell setup
 - [x] Git config
 - [x] SSH keys (key generated; GitHub not yet configured)
+- [x] sc3plugins — built from source (`~/code/sc3-plugins`), installed to `~/Library/Application Support/SuperCollider/Extensions/SC3plugins`

@@ -119,3 +119,61 @@
 | `Space+rn` | Rename symbol |
 | `Space+ca` | Code actions |
 | `[d` / `]d` | Previous / next diagnostic |
+
+---
+
+## vim-tidal (`.tidal` files only)
+| Key | Action |
+|-----|--------|
+| `Ctrl+e` | Send current paragraph/block to GHCi |
+| `\s` | Send current line only |
+| `Ctrl+h` | Hush — silence all patterns immediately |
+| `:TidalConfig` | Set target tmux pane (required once per session) |
+
+**Setup each session:** run `:TidalConfig`, accept socket `default`, enter pane ID from `tmux display-message -p '#{pane_id}'` run in the GHCi pane.
+
+---
+
+## tmux (prefix: `Ctrl+a`)
+| Key | Action |
+|-----|--------|
+| `Ctrl+a \|` | Split pane vertically |
+| `Ctrl+a -` | Split pane horizontally |
+| `Ctrl+a h/j/k/l` | Navigate panes |
+| `Ctrl+a r` | Reload tmux config |
+| `Ctrl+a d` | Detach session |
+| `Ctrl+a [` | Enter scroll/copy mode (`q` to exit) |
+| `Ctrl+a z` | Zoom current pane (toggle fullscreen) |
+| `Ctrl+a Ctrl+s` | Save session (tmux-resurrect) |
+| `Ctrl+a Ctrl+r` | Restore session (tmux-resurrect) |
+| `tmux new -s name` | New named session |
+| `tmux attach -t name` | Reattach to session |
+
+---
+
+## Shell aliases
+| Alias | Action |
+|-------|--------|
+| `ls` | `eza` with icons |
+| `ll` | `eza` long list with icons and git status |
+| `lt` | `eza` tree view (2 levels) |
+| `cat` | `bat` with syntax highlighting |
+| `lg` | `lazygit` — TUI git client |
+| `j <dir>` | `zoxide` smart jump (learns frequent dirs) |
+| `live` | Start full Tidal livecoding tmux session |
+
+**fzf:** `Ctrl+R` history search, `Ctrl+T` file search (with bat preview), `Alt+C` directory jump
+
+---
+
+## Formatting & writing (markdown files)
+| Key | Action |
+|-----|--------|
+| `Space+f` | Format with Prettier |
+| `]s` / `[s` | Next / previous spelling error |
+| `z=` | Suggest spelling corrections |
+| `zg` | Add word to dictionary |
+
+- Spellcheck active in markdown/text files (en_gb)
+- Soft wrap active — `j`/`k` navigate visual lines not file lines
+- **Note:** soft wrap prevents markview from rendering tables (known markview bug)

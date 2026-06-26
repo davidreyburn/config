@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+
+NAMES=(
+  "Groove Salad         — SomaFM"
+  "Space Station Soma   — SomaFM"
+  "Deep Space One       — SomaFM"
+  "Drone Zone           — SomaFM"
+  "Synphaera            — SomaFM"
+  "Fluid                — SomaFM"
+  "Beat Blender         — SomaFM"
+  "Mellow Mix           — Radio Paradise"
+  "Nonstop Casiopea"
+  "SmoothLounge.com"
+  "Echoes of Bluemars"
+  "Cryosleep            — Bluemars"
+  "Klassik Radio        — Pure Piano"
+)
+
+URLS=(
+  "https://somafm.com/groovesalad256.pls"
+  "https://somafm.com/spacestation130.pls"
+  "https://somafm.com/deepspaceone.pls"
+  "https://somafm.com/dronezone256.pls"
+  "https://somafm.com/synphaera256.pls"
+  "https://somafm.com/fluid130.pls"
+  "https://somafm.com/beatblender130.pls"
+  "https://stream.radioparadise.com/mellow-128"
+  "https://nonstopcasiopea.radioca.st/"
+  "https://smoothjazz.cdnstream1.com/2586_256.mp3"
+  "http://streams.echoesofbluemars.org:8000/bluemars"
+  "http://streams.echoesofbluemars.org:8000/cryosleep"
+  "http://stream.klassikradio.de/purepiano/mp3-128/"
+)
+
+COUNT=${#NAMES[@]}
+
+play() {
+  local idx=$1
+  local lua_idx=$((idx + 1))
+
+  # Build Lua-formatted tables with trimmed names
+  local lua_names="local NAMES = {"$'\n'
+  local lua_urls="local URLS = {"$'\n'
+  local trimmed
+  for i in "${!NAMES[@]}"; do
+    trimmed=$(sed -E 's/ {2,}/ /g' <<< "${NAMES[$i]}")
+    lua_names+="  \"${trimmed}\","$'\n'
+    lua_urls+="  \"${URLS[$i]}\","$'\n'
+  done
+  lua_names+="}"
+  lua_urls+="}"
+
+  local lua="/tmp/radio_$$.lua"
+  cat > "$lua" << LUA
+${lua_names}
+${lua_urls}
+local idx = ${lua_idx}
+local count = #NAMES
+local last_title = ""
+
+local function show_station()
+    io.write("\27[1;36m▶  " .. NAMES[idx] .. "\27[0m\n")
+    io.flush()
+end
+
+local function switch_to(new_idx)
+    if new_idx < 1 then new_idx = count end
+    if new_idx > count then new_idx = 1 end
+    idx = new_idx
+    last_title = ""
+    show_station()
+    mp.commandv("loadfile", URLS[idx])
+end
+
+mp.observe_property("media-title", "string", function(_, val)
+    if val and val ~= last_title then
+        last_title = val
+        io.write("  " .. val .. "\n")
+        io.flush()
+        io.write("\27]0;" .. NAMES[idx] .. ": " .. val .. "\7")
+        io.flush()
+    end
+end)
+
+mp.add_forced_key_binding("NEXT", "radio-next",    function() switch_to(idx + 1) end)
+mp.add_forced_key_binding("PREV", "radio-prev",    function() switch_to(idx - 1) end)
+mp.add_forced_key_binding(">",    "radio-next-kb", function() switch_to(idx + 1) end)
+mp.add_forced_key_binding("<",    "radio-prev-kb", function() switch_to(idx - 1) end)
+
+mp.register_event("shutdown", function()
+    io.write("\27]0;\7")
+    io.flush()
+end)
+LUA
+
+  printf "\033[1;36m▶  %s\033[0m\n" "${NAMES[$idx]}"
+  mpv --no-video --really-quiet \
+    --script="$lua" \
+    "${URLS[$idx]}"
+  rm -f "$lua"
+}
+
+list() {
+  printf "\n  \033[1m%2s  %-s\033[0m\n" "#" "Channel"
+  printf "  %s\n" "────────────────────────────────"
+  printf "  \033[90m%2d  Random\033[0m\n" 0
+  for i in "${!NAMES[@]}"; do
+    printf "  \033[33m%2d\033[0m  %s\n" "$((i + 1))" "${NAMES[$i]}"
+  done
+  printf "\n  Usage: radio [0-%d]\n\n" "$COUNT"
+}
+
+if [[ $# -eq 0 ]]; then
+  list
+elif [[ $1 =~ ^[0-9]+$ ]]; then
+  n=$1
+  if (( n == 0 )); then
+    play $(( RANDOM % COUNT ))
+  elif (( n <= COUNT )); then
+    play $(( n - 1 ))
+  else
+    printf "Channel %d not found (max %d). Run 'radio' to list channels.\n" "$n" "$COUNT" >&2
+    exit 1
+  fi
+else
+  printf "Usage: radio [channel]\n" >&2
+  exit 1
+fi

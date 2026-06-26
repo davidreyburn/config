@@ -5,6 +5,7 @@
 set -e
 
 REPO="$(cd "$(dirname "$0")" && pwd)/dotfiles"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 link() {
   local src="$1"
@@ -39,6 +40,9 @@ if [ ! -d "$HOME/.config/nvim" ]; then
 fi
 link "$REPO/nvim/init.lua"             "$HOME/.config/nvim/init.lua"
 link "$REPO/nvim/colors/phosphor.lua"  "$HOME/.config/nvim/colors/phosphor.lua"
+
+echo "→ utilities"
+link "$ROOT/utilities/radio/radio" "/opt/homebrew/bin/radio"
 
 echo ""
 echo "Done. Open a new terminal and run 'nvim' then :lua vim.pack.update() to install plugins."

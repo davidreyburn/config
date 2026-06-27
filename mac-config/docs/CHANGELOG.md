@@ -4,6 +4,10 @@
 
 ## 2026-06-27
 
+### topo-viz — 16 palettes + 6 character modes + h/j/k/l navigation
+- **What:** Added all 15 spec palettes (PHOSPHOR, SURVEY, INFRARED, BATHYMETRY, GHOST, FOSSIL, NEON NOIR, AURORA, OPERATOR, TOXIC, FLORAL SHOPPE, CREAMY SUNSET, PERIDOT, DUSTY PRAIRIE, SGB-2H) alongside existing VERDIGRIS. Added 3 new character modes (BRAILLE, SHADE, RELIEF). `h`/`j` cycles palettes, `k`/`l` cycles modes. Removed `c` key.
+- **Why:** Full implementation of topo-ascii-spec-v1.0.0 palette and mode inventory; h/j/k/l is simpler than vim command mode
+
 ### topo-viz — moved to ~/config/utilities/topo-viz/
 - **What:** Source at `~/config/utilities/topo-viz/topo-viz.py`; `~/bin/topo-viz` launcher updated
 - **Why:** Qualifies as a deployable utility; config repo is canonical home for anything working

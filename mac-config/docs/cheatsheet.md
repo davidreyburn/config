@@ -515,7 +515,12 @@ topo-viz    # start — cava launches and is managed automatically
 | Key | Action |
 |-----|--------|
 | `q` / `Esc` | Quit |
-| `c` | Cycle character mode (STRATA → BLOCKS → STIPPLE) |
+| `h` / `j` | Previous / next palette |
+| `k` / `l` | Previous / next character mode |
+
+**Palettes (16):** VERDIGRIS · PHOSPHOR · SURVEY · INFRARED · BATHYMETRY · GHOST · FOSSIL · NEON NOIR · AURORA · OPERATOR · TOXIC · FLORAL SHOPPE · CREAMY SUNSET · PERIDOT · DUSTY PRAIRIE · SGB-2H
+
+**Modes (6):** STRATA · BLOCKS · STIPPLE · BRAILLE · SHADE · RELIEF
 
 - Bass → terrain drift · volume → scroll speed · spectral content → direction
 - Pairs with `radio` as a standalone music visualizer

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-topo-term.py — audio-reactive topographic ASCII terrain, ANSI terminal output.
+topo-viz — audio-reactive topographic ASCII terrain, ANSI terminal output.
 Implements topo-ascii-spec-v1.0.0 for terminal emulators.
-Audio reactivity via cava raw FIFO at /tmp/topo-audio.fifo.
+Audio reactivity via cava raw FIFO at /tmp/topo-audio.
+Keys: h/j = prev/next palette  k/l = prev/next character mode  q = quit
 """
 
 import sys, os, math, time, signal, threading, select, random, tty, termios, stat as _stat
 import numpy as np
 
-# ─── Palette ──────────────────────────────────────────────────────────────────
+# ─── Palettes ─────────────────────────────────────────────────────────────────
 
 VERDIGRIS = {
     'name': 'VERDIGRIS',
@@ -27,6 +28,207 @@ VERDIGRIS = {
     'contour': (68, 187, 68),
 }
 
+PHOSPHOR = {
+    'name': 'PHOSPHOR',
+    'bg': (1, 10, 3),
+    'bands': [
+        (0.12, (1,   14,  4)),   (0.22, (3,   26,  7)),
+        (0.32, (6,   46,  14)),  (0.43, (10,  74,  24)),
+        (0.54, (15,  102, 34)),  (0.65, (23,  128, 48)),
+        (0.75, (34,  160, 64)),  (0.86, (51,  196, 85)),
+        (1.01, (85,  238, 119)),
+    ],
+    'contour': (57, 255, 106),
+}
+
+SURVEY = {
+    'name': 'SURVEY',
+    'bg': (6, 10, 7),
+    'bands': [
+        (0.12, (10,  42,  58)),  (0.22, (13,  61,  85)),
+        (0.30, (200, 184, 112)), (0.42, (74,  122, 58)),
+        (0.55, (58,  98,  48)),  (0.67, (107, 92,  66)),
+        (0.79, (138, 122, 106)), (0.89, (184, 176, 164)),
+        (1.01, (232, 228, 224)),
+    ],
+    'contour': (255, 255, 255),
+}
+
+INFRARED = {
+    'name': 'INFRARED',
+    'bg': (8, 5, 5),
+    'bands': [
+        (0.12, (13,  5,   32)),  (0.25, (26,  8,   64)),
+        (0.38, (74,  8,   48)),  (0.50, (138, 16,  32)),
+        (0.62, (204, 40,  0)),   (0.74, (238, 102, 0)),
+        (0.85, (255, 170, 0)),   (0.93, (255, 221, 68)),
+        (1.01, (255, 255, 204)),
+    ],
+    'contour': (255, 68, 0),
+}
+
+BATHYMETRY = {
+    'name': 'BATHYMETRY',
+    'bg': (2, 8, 16),
+    'bands': [
+        (0.10, (0,   8,   32)),  (0.22, (0,   24,  64)),
+        (0.35, (0,   48,  96)),  (0.47, (0,   72,  128)),
+        (0.58, (0,   96,  160)), (0.69, (8,   128, 184)),
+        (0.79, (32,  160, 204)), (0.89, (96,  200, 224)),
+        (1.01, (176, 238, 255)),
+    ],
+    'contour': (0, 212, 255),
+}
+
+GHOST = {
+    'name': 'GHOST',
+    'bg': (6, 6, 10),
+    'bands': [
+        (0.15, (8,   8,   18)),  (0.28, (16,  16,  42)),
+        (0.40, (26,  26,  64)),  (0.52, (40,  40,  88)),
+        (0.63, (56,  56,  112)), (0.73, (80,  72,  136)),
+        (0.82, (104, 88,  160)), (0.91, (136, 120, 192)),
+        (1.01, (192, 184, 232)),
+    ],
+    'contour': (153, 136, 255),
+}
+
+FOSSIL = {
+    'name': 'FOSSIL',
+    'bg': (18, 12, 8),
+    'bands': [
+        (0.12, (30,  22,  15)),  (0.22, (52,  38,  24)),
+        (0.32, (82,  62,  42)),  (0.43, (115, 88,  58)),
+        (0.54, (148, 118, 82)),  (0.65, (178, 152, 118)),
+        (0.75, (200, 178, 148)), (0.86, (220, 204, 178)),
+        (1.01, (242, 232, 215)),
+    ],
+    'contour': (248, 240, 225),
+}
+
+NEON_NOIR = {
+    'name': 'NEON NOIR',
+    'bg': (2, 4, 18),
+    'bands': [
+        (0.10, (4,   8,   28)),  (0.20, (8,   18,  62)),
+        (0.30, (14,  44,  114)), (0.42, (20,  90,  188)),
+        (0.53, (10,  168, 228)), (0.63, (80,  20,  162)),
+        (0.73, (202, 22,  168)), (0.86, (255, 44,  188)),
+        (1.01, (255, 144, 242)),
+    ],
+    'contour': (0, 224, 255),
+}
+
+AURORA = {
+    'name': 'AURORA',
+    'bg': (0, 4, 12),
+    'bands': [
+        (0.10, (0,   8,   20)),  (0.20, (0,   18,  38)),
+        (0.30, (2,   42,  48)),  (0.42, (4,   88,  76)),
+        (0.53, (8,   148, 92)),  (0.63, (62,  200, 120)),
+        (0.73, (160, 60,  180)), (0.86, (220, 40,  160)),
+        (1.01, (255, 120, 220)),
+    ],
+    'contour': (0, 255, 180),
+}
+
+OPERATOR = {
+    'name': 'OPERATOR',
+    'bg': (10, 10, 15),
+    'bands': [
+        (0.12, (13,  13,  20)),  (0.22, (13,  51,  68)),
+        (0.32, (15,  72,  90)),  (0.43, (30,  100, 60)),
+        (0.53, (55,  134, 39)),  (0.63, (20,  175, 120)),
+        (0.73, (0,   217, 255)), (0.86, (15,  255, 100)),
+        (1.01, (30,  255, 0)),
+    ],
+    'contour': (30, 255, 0),
+}
+
+TOXIC = {
+    'name': 'TOXIC',
+    'bg': (4, 8, 2),
+    'bands': [
+        (0.10, (8,   16,  4)),   (0.20, (16,  38,  6)),
+        (0.30, (26,  76,  10)),  (0.42, (44,  126, 14)),
+        (0.53, (68,  188, 20)),  (0.64, (122, 226, 24)),
+        (0.74, (182, 246, 30)),  (0.86, (230, 255, 50)),
+        (1.01, (255, 255, 130)),
+    ],
+    'contour': (180, 255, 20),
+}
+
+FLORAL_SHOPPE = {
+    'name': 'FLORAL SHOPPE',
+    'bg': (35, 5, 44),
+    'bands': [
+        (0.10, (35,  5,   44)),  (0.20, (55,  10,  62)),
+        (0.30, (78,  18,  76)),  (0.42, (95,  24,  84)),
+        (0.52, (20,  140, 130)), (0.63, (26,  187, 156)),
+        (0.74, (80,  210, 190)), (0.86, (178, 240, 226)),
+        (1.01, (247, 247, 247)),
+    ],
+    'contour': (26, 210, 172),
+}
+
+CREAMY_SUNSET = {
+    'name': 'CREAMY SUNSET',
+    'bg': (52, 32, 62),
+    'bands': [
+        (0.10, (52,  32,  62)),  (0.22, (82,  52,  94)),
+        (0.34, (112, 72,  122)), (0.46, (158, 80,  108)),
+        (0.56, (192, 108, 130)), (0.67, (218, 132, 118)),
+        (0.77, (240, 160, 132)), (0.88, (250, 192, 162)),
+        (1.01, (255, 224, 200)),
+    ],
+    'contour': (255, 180, 120),
+}
+
+PERIDOT = {
+    'name': 'PERIDOT',
+    'bg': (8, 56, 54),
+    'bands': [
+        (0.10, (8,   56,  54)),  (0.22, (12,  80,  70)),
+        (0.34, (20,  110, 78)),  (0.46, (36,  140, 88)),
+        (0.56, (62,  172, 98)),  (0.67, (106, 208, 122)),
+        (0.77, (162, 232, 108)), (0.88, (210, 248, 130)),
+        (1.01, (251, 255, 163)),
+    ],
+    'contour': (190, 255, 90),
+}
+
+DUSTY_PRAIRIE = {
+    'name': 'DUSTY PRAIRIE',
+    'bg': (60, 36, 8),
+    'bands': [
+        (0.10, (60,  36,  8)),   (0.22, (92,  60,  16)),
+        (0.34, (130, 90,  28)),  (0.46, (164, 124, 48)),
+        (0.56, (202, 164, 62)),  (0.67, (236, 198, 70)),
+        (0.77, (220, 220, 178)), (0.88, (196, 222, 244)),
+        (1.01, (213, 238, 255)),
+    ],
+    'contour': (248, 204, 68),
+}
+
+SGB_2H = {
+    'name': 'SGB-2H',
+    'bg': (0, 0, 0),
+    'bands': [
+        (0.10, (20,  20,  20)),  (0.22, (44,  44,  44)),
+        (0.34, (72,  72,  72)),  (0.46, (100, 100, 100)),
+        (0.56, (124, 124, 124)), (0.67, (152, 152, 152)),
+        (0.77, (184, 184, 184)), (0.88, (216, 216, 216)),
+        (1.01, (248, 248, 248)),
+    ],
+    'contour': (255, 255, 255),
+}
+
+PALETTES = [
+    VERDIGRIS, PHOSPHOR, SURVEY, INFRARED, BATHYMETRY, GHOST, FOSSIL,
+    NEON_NOIR, AURORA, OPERATOR, TOXIC, FLORAL_SHOPPE, CREAMY_SUNSET,
+    PERIDOT, DUSTY_PRAIRIE, SGB_2H,
+]
+
 # ─── Character modes ──────────────────────────────────────────────────────────
 
 MODES = [
@@ -44,6 +246,21 @@ MODES = [
         'name': 'STIPPLE',
         'fill':      [' ', '∙', '·', '+', '×', '±', '÷', '%'],
         'cfn_cases': None,
+    },
+    {
+        'name': 'BRAILLE',
+        'fill':      [' ', '.', ':', 'o', 'O', '0', '#', '#'],
+        'cfn_cases': None,
+    },
+    {
+        'name': 'SHADE',
+        'fill':      [' ', ' ', '.', '.', '+', '+', '#', '@'],
+        'cfn_cases': None,
+    },
+    {
+        'name': 'RELIEF',
+        'fill':      [' ', '.', '°', 'o', 'O', '0', '@', '█'],
+        'cfn_cases': ['+', '-', '¦', '+'],
     },
 ]
 
@@ -314,13 +531,15 @@ def main():
     stop  = threading.Event()
     threading.Thread(target=_audio_thread, args=(audio, stop), daemon=True).start()
 
-    palette   = VERDIGRIS
-    mode_idx  = 0
-    mode      = MODES[mode_idx]
+    palette_idx = 0
+    palette     = PALETTES[palette_idx]
+    mode_idx    = 0
+    mode        = MODES[mode_idx]
     lookup, n_bands, fill_len = build_lookup(palette, mode)
     drift     = Drift()
     elev      = compute_elevation(rows, cols, drift.dx, drift.dy)
 
+    flash_until  = 0.0
     last_advance = time.monotonic()
     last_render  = time.monotonic()
     RENDER_INTERVAL = 1 / 30
@@ -342,10 +561,18 @@ def main():
                 ch = sys.stdin.read(1)
                 if ch in ('q', '\x1b', '\x03'):
                     break
-                elif ch == 'c':
-                    mode_idx = (mode_idx + 1) % len(MODES)
+                elif ch in ('h', 'j'):
+                    delta = -1 if ch == 'h' else 1
+                    palette_idx = (palette_idx + delta) % len(PALETTES)
+                    palette = PALETTES[palette_idx]
+                    lookup, n_bands, fill_len = build_lookup(palette, mode)
+                    flash_until = now + 0.5
+                elif ch in ('k', 'l'):
+                    delta = -1 if ch == 'k' else 1
+                    mode_idx = (mode_idx + delta) % len(MODES)
                     mode = MODES[mode_idx]
                     lookup, n_bands, fill_len = build_lookup(palette, mode)
+                    flash_until = now + 0.5
 
             rms, bass, centroid = audio.get()
 
@@ -356,6 +583,13 @@ def main():
 
             if now - last_render >= RENDER_INTERVAL:
                 sys.stdout.write(render(elev, palette, mode, lookup, n_bands, fill_len, rows, cols))
+                if now < flash_until:
+                    c, b = palette['contour'], palette['bg']
+                    style = f'\x1b[38;2;{c[0]};{c[1]};{c[2]}m\x1b[48;2;{b[0]};{b[1]};{b[2]}m'
+                    sys.stdout.write(
+                        f'\x1b[1;1H{style} PALETTE: {palette["name"]:<16}'
+                        f'\x1b[2;1H{style} MODE:    {mode["name"]:<16}'
+                    )
                 sys.stdout.flush()
                 last_render = now
             else:

@@ -166,6 +166,15 @@ Two clipboards exist: macOS system clipboard and tmux's internal buffer. They do
 | `Ctrl+h/j/k/l` | Move between splits |
 | `:q` | Close split |
 
+### Dashboard (mini.starter)
+Opens automatically when nvim is launched with no file, or with a directory (`nvim ~/knowledge`). Neo-tree roots to that directory; starter fills the main panel.
+
+| Key | Action |
+|-----|--------|
+| `j` / `k` | Move through items |
+| `Enter` | Open item |
+| Type | Filter items by name |
+
 ### Neo-tree (file browser)
 | Key | Action |
 |-----|--------|
@@ -176,6 +185,62 @@ Two clipboards exist: macOS system clipboard and tmux's internal buffer. They do
 | `d` | Delete |
 | `y` / `m` | Copy / move |
 | `q` / `\` | Close tree |
+
+### Oil (filesystem as buffer)
+Edit files and directories like a text buffer — rename by editing lines, delete by deleting lines.
+
+| Key | Action |
+|-----|--------|
+| `-` | Open parent directory in oil |
+| `<leader>-` | Open oil in floating window |
+| `Enter` | Open file / descend into dir |
+| `-` (in oil) | Go up to parent |
+| `_` | Open in cwd |
+| `Ctrl+s` | Save changes |
+| `Ctrl+h` | Toggle hidden files |
+| `q` | Quit |
+
+### Flash (jump navigation)
+Type `s` then 2 characters of your target — Flash highlights all matches with single-keystroke labels. Press the label to jump.
+
+| Key | Action |
+|-----|--------|
+| `s` | Flash jump (normal/visual/operator) |
+| `S` | Flash treesitter select |
+| `r` | Flash remote (operator-pending) |
+| `R` | Flash treesitter search (operator) |
+
+### Harpoon (file marks)
+Mark up to 4 files per project for instant jumping.
+
+| Key | Action |
+|-----|--------|
+| `<leader>a` | Mark current file |
+| `<C-e>` | Toggle mark menu |
+| `<leader>1-4` | Jump to mark 1–4 |
+
+In the menu: `Enter` to open, `d` to remove a mark.
+
+### Trouble (diagnostics panel)
+| Key | Action |
+|-----|--------|
+| `<leader>xx` | Workspace diagnostics |
+| `<leader>xb` | Buffer diagnostics |
+| `<leader>xq` | Quickfix list |
+| `<leader>xl` | Location list |
+| `gR` | LSP references |
+
+In panel: `j`/`k` navigate, `Enter` jump, `q` close, `o` jump + keep panel open.
+
+### Diffview (git diff UI)
+| Key | Action |
+|-----|--------|
+| `<leader>gd` | Open diff (staged vs HEAD) |
+| `<leader>gh` | Current file history |
+| `<leader>gH` | Full repo history |
+| `<leader>gc` | Close diffview |
+
+In diffview: `[x`/`]x` prev/next conflict, `<leader>co/ct/cb` choose ours/theirs/both.
 
 ### Telescope (fuzzy finder)
 | Key | Action |
@@ -197,6 +262,37 @@ Two clipboards exist: macOS system clipboard and tmux's internal buffer. They do
 | `Space rn` | Rename symbol |
 | `Space ca` | Code actions |
 | `[d` / `]d` | Previous / next diagnostic |
+
+### Surround (mini.surround — remapped to `gz`)
+| Key | Action |
+|-----|--------|
+| `gza` + motion | Add surrounding |
+| `gzd` + motion | Delete surrounding |
+| `gzr` + motion | Replace surrounding |
+| `gzf` / `gzF` | Find surrounding right / left |
+
+Examples: `gzaiw)` wraps word in parens · `gzd"` removes quotes · `gzr)'` replaces `)` with `'`
+
+### Zen Mode + Twilight
+| Key | Action |
+|-----|--------|
+| `<leader>z` | Toggle zen mode |
+
+Zen mode centers the buffer at 82 columns, hides line numbers and signs. Twilight dims everything outside the current paragraph automatically.
+
+### Obsidian (`~/knowledge` vault)
+| Key | Action |
+|-----|--------|
+| `<leader>on` | New note |
+| `<leader>of` | Find note (quick switch) |
+| `<leader>og` | Grep across all notes |
+| `<leader>ob` | Backlinks for current note |
+| `<leader>ol` | Links in current note |
+| `<leader>ot` | Open / create today's daily note |
+
+- `[[` in insert mode → wikilink autocomplete
+- `:ObsidianRename` to rename a note and update all links
+- Vault path: `~/knowledge`
 
 ### Markdown files
 | Key / Command | Action |
@@ -532,15 +628,19 @@ topo-viz    # start — cava launches and is managed automatically
 
 **Reading / writing notes:**
 ```
-j knowledge → glow DASHBOARD.md   # quick read
-j knowledge → nvim inbox/new.md   # edit
+nvim ~/knowledge        # dashboard + neo-tree rooted there
+<leader>of              # fuzzy find a note
+<leader>on              # create new note
+<leader>z               # zen mode for focused writing
+<leader>og              # grep across all notes
 ```
 
 **GM session prep (dungeonworld):**
 ```
-j dungeonworld → nvim             # open in nvim with neo-tree
-\                                  # browse files in tree
-Space sg                           # grep across all campaign files
+nvim ~/dungeonworld      # dashboard + neo-tree rooted there
+Space sg                 # grep across all campaign files
+<leader>a                # mark frequently-used files (harpoon)
+<leader>1-4              # jump between them instantly
 ```
 
 **Checking system health:**

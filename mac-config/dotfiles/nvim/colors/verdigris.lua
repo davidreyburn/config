@@ -117,6 +117,17 @@ hi('@property',                { fg = c.teal })
 hi('@label',                   { fg = c.bone })
 hi('@punctuation.special',     { fg = c.orange })
 
+-- Flash
+hi('FlashBackdrop',  { fg = c.dim })
+hi('FlashMatch',     { fg = c.teal,   bold = true })
+hi('FlashCurrent',   { fg = c.lime,   bold = true })
+hi('FlashLabel',     { fg = c.bg,     bg = c.lime,  bold = true })
+hi('FlashPrompt',    { fg = c.bone,   bg = c.bg_dim })
+
+-- Indent Blankline
+hi('IblIndent',      { fg = c.bg_sel })
+hi('IblScope',       { fg = c.dim })
+
 -- JSON overrides: keys teal (via @property), values bone (strings dominate, orange is too much)
 hi('@string.json',             { fg = c.bone })
 

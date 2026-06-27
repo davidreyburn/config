@@ -45,6 +45,15 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 - Docs: `../radio/CLAUDE.md`
 - Depends on: mpv, Ghostty (for tab title via OSC escape)
 
+### topo-viz
+- Audio-reactive topographic ASCII terrain visualizer
+- Source: `~/config/utilities/topo-viz/`; launcher at `~/bin/topo-viz`
+- Depends on: cava (`brew install cava`), numpy (`pip install numpy`)
+- Audio config: install `utilities/topo-viz/audio-feed.conf` → `~/.config/cava/audio-feed.conf`
+- Run: `topo-viz` — pairs naturally with `radio` as a standalone music visualizer
+- Also runs in the bottom-left pane of the `live` tmux session
+- Keys: `q`/`Esc` quit · `c` cycle character mode (STRATA / BLOCKS / STIPPLE)
+
 ---
 
 ## Configuration
@@ -249,8 +258,15 @@ Every tool added here should earn its place. Prefer CLI over GUI, keyboard over 
 ### live (session launcher)
 
 - Location: `~/bin/live`
-- Starts (or reattaches to) a tmux session with sclang, GHCi, and nvim pre-arranged
+- Starts (or reattaches to) a 4-pane tmux session: sclang (TL), GHCi/Tidal (TR), topo-viz (BL), nvim (BR)
 - Run: `live`
+
+### live-orca (session launcher)
+
+- Location: `~/bin/live-orca`
+- Starts (or reattaches to) a tmux session for ORCA livecoding: ORCA (main), sclang (right), scratch pane
+- MIDI routed via IAC Driver (CoreMIDI virtual bus) to SuperCollider
+- Run: `live-orca`
 
 ---
 

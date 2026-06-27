@@ -504,6 +504,25 @@ Tab title updates to show current station. See `~/code/radio/CLAUDE.md`.
 
 ---
 
+## topo-viz
+
+Audio-reactive topographic ASCII terrain. Runs in any terminal pane.
+
+```
+topo-viz    # start — cava launches and is managed automatically
+```
+
+| Key | Action |
+|-----|--------|
+| `q` / `Esc` | Quit |
+| `c` | Cycle character mode (STRATA → BLOCKS → STIPPLE) |
+
+- Bass → terrain drift · volume → scroll speed · spectral content → direction
+- Pairs with `radio` as a standalone music visualizer
+- Also runs in the bottom-left pane of the `live` session
+
+---
+
 ## Workflow patterns
 
 **Reading / writing notes:**

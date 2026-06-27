@@ -1,4 +1,4 @@
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 
 # History
 HISTFILE=~/.zsh_history
@@ -11,10 +11,24 @@ setopt HIST_REDUCE_BLANKS # strip extra whitespace before saving
 
 # Aliases
 alias z='ssh -t chives@aleph "docker exec -it openclaw-gateway bash -lc '\''cd /home/node/.openclaw/workspace && openclaw chat'\''"'
+alias ls='eza --icons'
+alias ll='eza --icons -la --git'
+alias lt='eza --icons --tree --level=2'
+alias cat='bat --style=plain'
+alias lg='lazygit'
+alias doc='glow -p -w 80'
+
+# fzf — fuzzy Ctrl+R history search, Ctrl+T file search, Alt+C directory jump
+# use bat for previews
+eval "$(fzf --zsh)"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=plain {}'"
 
 # Plugins
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# fzf — fuzzy Ctrl+R history search, Ctrl+T file search, Alt+C directory jump
-eval "$(fzf --zsh)"
+# zoxide — smart cd (use 'j' to avoid shadowing the ssh alias 'z')
+eval "$(zoxide init zsh --cmd j)"
+
+# starship prompt
+eval "$(starship init zsh)"

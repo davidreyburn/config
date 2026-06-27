@@ -433,7 +433,7 @@ class Drift:
         self.angle += (ang_target - self.angle) * (0.006 + bass_g * 0.010)
 
         # Speed: volume drives magnitude
-        self.speed += (rms_g * 0.009 - self.speed) * 0.06
+        self.speed += (rms_g * 0.018 - self.speed) * 0.06
 
         self.dx += math.cos(self.angle) * self.speed
         self.dy += math.sin(self.angle) * self.speed * 0.55

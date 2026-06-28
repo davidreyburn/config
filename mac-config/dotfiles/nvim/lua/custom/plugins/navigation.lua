@@ -25,6 +25,7 @@ vim.keymap.set({ 'o', 'x' },      'R', function() require('flash').treesitter_se
 -- ── Oil ────────────────────────────────────────────────────────────────
 vim.pack.add { 'https://github.com/stevearc/oil.nvim' }
 require('oil').setup {
+  default_file_explorer = false,  -- neo-tree owns directory handling
   view_options = { show_hidden = true },
   float        = { padding = 2 },
 }

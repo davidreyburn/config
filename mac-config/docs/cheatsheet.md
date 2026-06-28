@@ -490,6 +490,8 @@ d1 $ sound "bd*4"              -- repeat 4x per cycle
 d2 $ sound "hh*8" # gain 0.6   -- second pattern, quieter
 d1 $ sound "bd [sn sn] bd ~"   -- subdivision, rest
 d1 $ fast 2 $ sound "bd sn"    -- double speed
+d1 silence                      -- stop d1 only
+d2 silence                      -- stop d2 only
 hush                            -- silence everything
 -- this is a comment
 ```

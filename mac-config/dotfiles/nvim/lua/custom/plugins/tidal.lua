@@ -23,7 +23,8 @@ local function tidal_silence_block()
   for i = start, stop do
     local ch = vim.fn.getline(i):match('^%s*(d%d+)%s')
     if ch then
-      vim.fn['tidal#send'](ch .. ' silence\n')
+      local n = ch:match('d(%d+)')
+      vim.cmd('TidalSilence ' .. n)
       return
     end
   end

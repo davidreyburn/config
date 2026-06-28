@@ -313,6 +313,7 @@ Zen mode centers the buffer at 82 columns, hides line numbers and signs. Twiligh
 | Key | Action |
 |-----|--------|
 | `Ctrl+e` | Send paragraph/block to GHCi |
+| `Ctrl+s` | Silence the channel in current block (`dN silence`) |
 | `\s` | Send current line only |
 | `Ctrl+h` | Hush — silence all patterns |
 | `:TidalConfig` | Set target GHCi pane (once per session) |
